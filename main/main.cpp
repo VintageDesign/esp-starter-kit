@@ -3,24 +3,19 @@
 #include <inttypes.h>
 
 #include <gpio.h>
-#include <servo.h>
+#include <math.h>
+#include <stepper.h>
 
 static const char *TAG = "APP";
 extern "C" void app_main() {
-  // GPIO demo
-  pinMode(GPIO_NUM_2, OUTPUT);
-  ESP_LOGI(TAG, "GPIO demo: toggling LED on GPIO2");
-  digitalWrite(GPIO_NUM_2, HIGH);
-  vTaskDelay(1000 / portTICK_PERIOD_MS);
-  digitalWrite(GPIO_NUM_2, LOW);
-  vTaskDelay(1000 / portTICK_PERIOD_MS);
-
-  Servo servo;
-  servo.attach(23);
+  Stepper stepper(22, 5, 23, MICROSTEP_1, 240);
+  stepper.enable_motor();
   while (true) {
-    servo.write(0);
+    stepper.set_dir(false);
+    stepper.write_rad(M_PI);
     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    servo.write(100);
+    stepper.set_dir(true);
+    stepper.write_rad(M_PI);
     vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
 }
